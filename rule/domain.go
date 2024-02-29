@@ -9,14 +9,19 @@ import (
 	"strings"
 )
 
+var (
+	// domainModifierRegex matches domain modifier entries.
+	//
+	// The need for this regex comes from the fact that domain modifiers can containing regular expressions.
+	// Regular expressions can contain the alternative separator (|) which is also used to separate domain modifier entries,
+	// which makes it impossible to just split the modifier by the separator.
+	domainModifierRegex = regexp.MustCompile(`~?((/.*/)|[^|]+)+`)
+)
+
 type domainModifier struct {
 	entries  []domainModifierEntry
 	inverted bool
 }
-
-var (
-	domainModifierRegex = regexp.MustCompile(`~?((/.*/)|[^|]+)+`)
-)
 
 func (m *domainModifier) Parse(modifier string) error {
 	eqIndex := strings.IndexByte(modifier, '=')
